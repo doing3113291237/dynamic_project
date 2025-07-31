@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-import { generateDynamicRoute, dynamicRoute } from '@/router/dynamic.js'
+import { dynamicRoute, dynamic } from '@/router/dynamic.js'
 import { useMenuStore } from '@/stores/menu.js'
+import { useUserStore } from '@/stores/user.js'
 import router from '@/router/index.js'
 
 const loginForm = ref({
@@ -19,13 +20,16 @@ const login = () => {
     if (valid) {
       console.log('发送登录请求')
       new Promise((resolve, reject) => {
-        resolve(dynamicRoute.data)
+        resolve(dynamic)
       }).then((res) => {
         const menuStore = useMenuStore()
-        menuStore.menuList = res
+        const userStore = useUserStore()
+        userStore.token = res.token
+        menuStore.menuList = res.data
         // 已经将请求的动态路由存储在menuStore的menuList中,在执行完构建动态路由后,直接router.push(menuStore.firstMenu)
-        generateDynamicRoute()
-        router.push(menuStore.firstMenu)
+        dynamicRoute(res.data)
+        console.log(router.getRoutes())
+        router.push('/layout/userMessage/userInfo')
       })
     }
   })

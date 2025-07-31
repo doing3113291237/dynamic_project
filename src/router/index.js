@@ -11,27 +11,26 @@ const staticRoute = [
     },
     component: () => import('@/login/login.vue'),
   },
-  {
-    path: '/home',
-    name: 'home',
-  },
   { path: '/' },
 ]
-export const dynamicRoute = {
+export const dynamicRouter = {
   path: '/layout',
   name: 'layout',
   meta: {
-    title: '登录',
+    title: '首页',
   },
+  children: [],
+  component: undefined,
 }
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [...staticRoute, dynamicRoute],
+  routes: [...staticRoute, dynamicRouter],
 })
 
 router.beforeEach((to, from, next) => {
+  console.log(to.path)
   if (to.path === '/') {
-    console.log('看当前用户的menuStore的firstMenu是否有值,有则跳转至firstMenu,没有则/login')
     let menuStore = useMenuStore()
     return next(menuStore.firstMenu || '/login')
   }
