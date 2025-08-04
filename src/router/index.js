@@ -20,7 +20,7 @@ export const dynamicRouter = {
     title: '首页',
   },
   children: [],
-  component: undefined,
+  component: () => import('@/layout/index.vue'),
 }
 
 const router = createRouter({
@@ -32,6 +32,7 @@ router.beforeEach((to, from, next) => {
   console.log(to.path)
   if (to.path === '/') {
     let menuStore = useMenuStore()
+    console.log(menuStore.firstMenu)
     return next(menuStore.firstMenu || '/login')
   }
 

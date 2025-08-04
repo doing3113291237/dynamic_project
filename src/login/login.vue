@@ -30,6 +30,7 @@ const login = () => {
         dynamicRoute(res.data)
         console.log(router.getRoutes())
         router.push('/layout/userMessage/userInfo')
+        // router.push('/layout/userMessage/userAvatar')
       })
     }
   })
