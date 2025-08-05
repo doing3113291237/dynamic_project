@@ -1,23 +1,54 @@
 <script setup>
 import { useMenuStore } from '@/stores/menu.js'
+import { useRouter, useRoute } from 'vue-router'
 import subMenu from './subMenu.vue'
-import { ref } from 'vue'
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { watch } from 'vue'
+
+const router = useRouter()
+const route = useRoute()
 const menuStore = useMenuStore()
-// 当前选中的一级菜单path
+
 const activeToMenu = ref('')
-// 默认选中第一个一级菜单
-if (menuStore.menuList.length > 0) {
-  activeToMenu.value = menuStore.menuList[0].meta.fullPath
+
+// 递归找到第一个叶子菜单
+function findFirstLeaf(menu) {
+  if (!menu) return null
+  if (!menu.children || menu.children.length === 0) {
+    return menu
+  }
+  return findFirstLeaf(menu.children[0])
 }
+
+// 监听 menuList 初始化
+watch(
+  () => menuStore.menuList,
+  (list) => {
+    if (list.length > 0 && !activeToMenu.value) {
+      activeToMenu.value = list[0].meta.fullPath
+      const firstLeaf = findFirstLeaf(list[0])
+      if (firstLeaf?.meta?.fullPath) {
+        router.push(firstLeaf.meta.fullPath)
+      }
+    }
+  },
+  { immediate: true }
+)
+
 // 根据当前一级菜单获取对应子菜单
 const getSubMenu = computed(() => {
   const selected = menuStore.menuList.find(item => item.meta.fullPath === activeToMenu.value)
   return selected?.children || []
 })
-// 切换一级菜单
+
+// 切换一级菜单并跳转第一个叶子
 const changeSubMenu = (key) => {
   activeToMenu.value = key
+  const selected = menuStore.menuList.find(item => item.meta.fullPath === key)
+  const firstLeafMenu = findFirstLeaf(selected)
+  if (firstLeafMenu?.meta?.fullPath) {
+    router.push(firstLeafMenu.meta.fullPath)
+  }
 }
 </script>
 
@@ -28,7 +59,7 @@ const changeSubMenu = (key) => {
       <!-- logo -->
       <div class="header-left">logo</div>
       <!-- 子菜单 -->
-      <el-menu :default-active="activeToMenu" router class="el-menu" :unique-opened="true" mode="vertical">
+      <el-menu :default-active="route.push" router class="el-menu" :unique-opened="true" mode="vertical">
         <template v-for="item in getSubMenu" :key="item.meta.fullPath">
           <sub-menu v-if="item.children && item.children.length > 0" :menu="item.children"
             :title="item.meta.fullPath" />
@@ -63,7 +94,7 @@ const changeSubMenu = (key) => {
   width: 100vw;
 
   .el-header {
-    width: 1400px;
+    width: 80vw;
     height: 60px;
     line-height: 60px;
     padding: 0 20px;
