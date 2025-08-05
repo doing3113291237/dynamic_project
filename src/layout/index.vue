@@ -1,65 +1,97 @@
 <script setup>
 import { useMenuStore } from '@/stores/menu.js'
 import subMenu from './subMenu.vue'
+import { ref } from 'vue'
+import { computed } from 'vue'
 const menuStore = useMenuStore()
+// 当前选中的一级菜单path
+const activeToMenu = ref('')
+// 默认选中第一个一级菜单
+if (menuStore.menuList.length > 0) {
+  activeToMenu.value = menuStore.menuList[0].meta.fullPath
+}
+// 根据当前一级菜单获取对应子菜单
+const getSubMenu = computed(() => {
+  const selected = menuStore.menuList.find(item => item.meta.fullPath === activeToMenu.value)
+  return selected?.children || []
+})
+// 切换一级菜单
+const changeSubMenu = (key) => {
+  activeToMenu.value = key
+}
 </script>
 
 <template>
   <el-container>
-    <el-header>
-      <div class="header-left">测试系统</div>
-      <el-menu
-        default-active="/layout/article/content"
-        router
-        mode="horizontal"
-        :unique-opened="true"
-      >
-        <template v-for="item in menuStore.menuList">
-          <sub-menu
-            v-if="item.children && item.children.length > 0"
-            :menu="item.children"
-            :title="item.meta.fullPath"
-          />
-          <el-menu-item v-else :index="item.meta.fullPath">{{ item.meta.fullPath }}</el-menu-item>
+    <!-- 左侧logo和子菜单 -->
+    <el-aside width="300px" class="sidebar">
+      <!-- logo -->
+      <div class="header-left">logo</div>
+      <!-- 子菜单 -->
+      <el-menu :default-active="activeToMenu" router class="el-menu" :unique-opened="true" mode="vertical">
+        <template v-for="item in getSubMenu" :key="item.meta.fullPath">
+          <sub-menu v-if="item.children && item.children.length > 0" :menu="item.children"
+            :title="item.meta.fullPath" />
+          <el-menu-item v-else :index="item.meta.fullPath">
+            {{ item.meta.fullPath }}
+          </el-menu-item>
         </template>
       </el-menu>
-      <div class="header-right"></div>
-    </el-header>
+    </el-aside>
     <el-container>
-      <el-aside>
-        {{ menuStore.menuList }}
-      </el-aside>
+      <!-- 右侧顶部一级菜单和主内容 -->
+      <el-header class="el-header">
+        <div class="header-right">
+          <el-menu mode="horizontal" :default-active="activeToMenu" @select="changeSubMenu">
+            <el-menu-item v-for="menu in menuStore.menuList" :key="menu.meta.fullPath" :index="menu.meta.fullPath">
+              {{ menu.meta.fullPath }}
+            </el-menu-item>
+          </el-menu>
+        </div>
+      </el-header>
       <el-main>
         <router-view />
       </el-main>
     </el-container>
   </el-container>
-  <!--  <router-view></router-view>-->
 </template>
+
 
 <style scoped lang="scss">
 .el-container {
   height: 100vh;
   width: 100vw;
+
   .el-header {
-    padding: 0;
-    display: flex;
-    .header-left {
-      width: 200px;
-      background-color: #a0efd7;
-    }
-    .el-menu {
-      flex: 1;
-      background-color: #9292ef;
-      max-width: 600px;
-    }
+    width: 1400px;
+    height: 60px;
+    line-height: 60px;
+    padding: 0 20px;
+
     .header-right {
-      width: 200px;
+      width: 100%;
       background-color: pink;
     }
   }
-  .el-aside {
-    width: 200px;
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: #f0f2f5;
+
+    .header-left {
+      height: 60px;
+      line-height: 60px;
+      text-align: center;
+      font-weight: bold;
+      background-color: #a0efd7;
+    }
+
+    .el-menu {
+      flex: 1;
+      border-right: none;
+      background-color: #9292ef;
+    }
   }
 }
 
