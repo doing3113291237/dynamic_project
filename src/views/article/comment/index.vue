@@ -39,7 +39,7 @@ const getCheckedNodes = () => {
   console.log(treeRef.value!.getCheckedNodes(true, false).filter((item) => item.disabled !== true))
 }
 const getCheckedKeys = () => {
-  console.log(treeRef.value!.getCheckedKeys(false))
+  console.log(treeRef.value!.getCheckedKeys(true))
 }
 const setCheckedNodes = () => {
   treeRef.value!.setCheckedNodes(
@@ -120,7 +120,6 @@ const data: any[] = [
   },
 ]
 const renderContent = (_h: any, { node, data, store }) => {
-  console.log(node)
   return h(
     'span',
     { style: 'display: flex; align-items: center;justify-content:space-between;width: 100%;' },

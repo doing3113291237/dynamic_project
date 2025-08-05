@@ -29,8 +29,7 @@ const login = () => {
         // 已经将请求的动态路由存储在menuStore的menuList中,在执行完构建动态路由后,直接router.push(menuStore.firstMenu)
         dynamicRoute(res.data)
         console.log(router.getRoutes())
-        router.push('/layout/userMessage/userInfo')
-        // router.push('/layout/userMessage/userAvatar')
+        router.push('/layout/article/content')
       })
     }
   })

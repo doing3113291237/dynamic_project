@@ -1,5 +1,5 @@
 import router, { dynamicRouter } from './index.js'
-
+import { useMenuStore } from '@/stores/menu.js'
 // 引入view文件夹所有的vue文件
 const modules = import.meta.glob('/src/views/**/*.vue')
 
@@ -8,11 +8,14 @@ const modules = import.meta.glob('/src/views/**/*.vue')
  * */
 export const dynamicRoute = (data) => {
   const route = generateDynamicRouter('/', data)
+  const menuStore = useMenuStore()
 
   for (const item of route) {
     // dynamicRouter.children.push(item)
+    console.log(item)
     router.addRoute('layout', item)
   }
+  menuStore.menuList = route
 }
 
 const generateDynamicRouter = (path, children) => {
@@ -33,14 +36,46 @@ const generateDynamicRouter = (path, children) => {
   return result
 }
 
+const getFirstLeaf = (routes) => {
+  return routes.length > 0
+    ? routes[0].children
+      ? getFirstLeaf(routes[0].children.fullPath)
+      : routes.meta.title
+    : ''
+}
+
 export const dynamic = {
   statusCode: 200,
   data: [
     {
-      path: 'userMessage',
-      name: 'userMessage',
+      path: 'article',
+      name: 'article',
       meta: {
-        title: '',
+        title: '文章',
+      },
+      children: [
+        {
+          // 认为从父级到子级path的拼接最终组件的访问push路径
+          path: 'content',
+          name: 'content',
+          meta: {
+            title: '内容',
+          },
+        },
+        {
+          path: 'comment',
+          name: 'comment',
+          meta: {
+            title: '评论',
+          },
+        },
+      ],
+    },
+    {
+      path: 'user',
+      name: 'user',
+      meta: {
+        title: '用户',
       },
       children: [
         {
@@ -49,183 +84,6 @@ export const dynamic = {
           name: 'userInfo',
           meta: {
             title: '用户信息',
-          },
-        },
-        {
-          path: 'userAvatar',
-          name: 'userAvatar',
-          meta: {
-            title: '用户头像',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
-          },
-        },
-      ],
-    },
-    {
-      path: 'brother',
-      name: 'brother',
-      meta: {
-        title: '第二个孩子',
-      },
-      children: [
-        {
-          // 认为从父级到子级path的拼接最终组件的访问push路径
-          path: 'bro',
-          name: 'bro',
-          meta: {
-            title: 'bro',
           },
         },
       ],
